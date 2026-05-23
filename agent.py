@@ -8,6 +8,10 @@ messages = []
 conversation_done = False
 
 
+def load_agent() -> str:
+    with open("agent.md","r") as agent_config:
+        return agent_config.read()
+
 def ask_to_agent(question: str, role="user") -> str:
     messages.append({"role": role, "content": question})
     result = agent.invoke({"messages": messages})
@@ -18,7 +22,7 @@ def ask_to_agent(question: str, role="user") -> str:
 
 
 def terminate_conversation_tool():
-    """Closes the current conversation with the user"""
+    """Closes the current conversation with the user, it should  be used when the user wants to close the conversation."""
     global conversation_done
     conversation_done = True
     conversation = ""
@@ -28,10 +32,10 @@ def terminate_conversation_tool():
     with open("conversation.txt", "w") as file:
         file.write(conversation)
 
-
+agent_config = load_agent();
 agent = create_agent(
     model="openai:gpt-5.4",
-    system_prompt="You are a helpful assistant",
+    system_prompt=agent_config,
     tools=[terminate_conversation_tool],
 )
 result = agent.invoke({"messages": messages})
