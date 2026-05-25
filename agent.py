@@ -4,7 +4,7 @@ import os
 
 load_dotenv()
 
-DEFAULT_MODEL = "openai:gpt-5-mini"
+DEFAULT_MODEL = "openai:gpt-5.4"
 MODEL = os.getenv("MODEL", DEFAULT_MODEL)
 
 messages = []
@@ -41,7 +41,6 @@ agent = create_agent(
     system_prompt=agent_config,
     tools=[terminate_conversation_tool],
 )
-result = agent.invoke({"messages": messages})
 hello_message = ask_to_agent(
     "Say hello and introduce yourself, expect interaction from the user.", "system"
 )
