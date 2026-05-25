@@ -4,6 +4,9 @@ import os
 
 load_dotenv()
 
+DEFAULT_MODEL = "openai:gpt-5-mini"
+MODEL = os.getenv("MODEL", DEFAULT_MODEL)
+
 messages = []
 conversation_done = False
 
@@ -34,7 +37,7 @@ def terminate_conversation_tool():
 
 agent_config = load_agent();
 agent = create_agent(
-    model="openai:gpt-5.4",
+    model=MODEL,
     system_prompt=agent_config,
     tools=[terminate_conversation_tool],
 )
