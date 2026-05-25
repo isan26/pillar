@@ -27,7 +27,7 @@ def terminate_conversation_tool():
     conversation_done = True
     conversation = ""
     for message in messages:
-        conversation += f"({message["role"]}): {message["content"]} \n"
+        conversation += f"({message['role']}): {message['content']} \n"
 
     with open("conversation.txt", "w") as file:
         file.write(conversation)
