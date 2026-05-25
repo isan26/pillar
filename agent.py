@@ -4,6 +4,7 @@ import os
 
 load_dotenv()
 
+TEXT_ENCODING = "utf-8"
 DEFAULT_MODEL = "openai:gpt-5.4"
 MODEL = os.getenv("MODEL", DEFAULT_MODEL)
 
@@ -12,7 +13,7 @@ conversation_done = False
 
 
 def load_agent() -> str:
-    with open("agent.md","r") as agent_config:
+    with open("agent.md", "r", encoding=TEXT_ENCODING) as agent_config:
         return agent_config.read()
 
 def ask_to_agent(question: str, role="user") -> str:
@@ -32,7 +33,7 @@ def terminate_conversation_tool():
     for message in messages:
         conversation += f"({message['role']}): {message['content']} \n"
 
-    with open("conversation.txt", "w") as file:
+    with open("conversation.txt", "w", encoding=TEXT_ENCODING) as file:
         file.write(conversation)
 
 agent_config = load_agent();
