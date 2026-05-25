@@ -4,6 +4,9 @@ import os
 
 load_dotenv()
 
+DEFAULT_MODEL = "openai:gpt-5.4"
+MODEL = os.getenv("MODEL", DEFAULT_MODEL)
+
 messages = []
 conversation_done = False
 
@@ -27,18 +30,17 @@ def terminate_conversation_tool():
     conversation_done = True
     conversation = ""
     for message in messages:
-        conversation += f"({message["role"]}): {message["content"]} \n"
+        conversation += f"({message['role']}): {message['content']} \n"
 
     with open("conversation.txt", "w") as file:
         file.write(conversation)
 
 agent_config = load_agent();
 agent = create_agent(
-    model="openai:gpt-5.4",
+    model=MODEL,
     system_prompt=agent_config,
     tools=[terminate_conversation_tool],
 )
-result = agent.invoke({"messages": messages})
 hello_message = ask_to_agent(
     "Say hello and introduce yourself, expect interaction from the user.", "system"
 )
