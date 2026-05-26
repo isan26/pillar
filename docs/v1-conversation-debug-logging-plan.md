@@ -76,17 +76,26 @@ ai_message.response_metadata
 }
 ```
 
-- Add optional env vars:
+- Keep runtime settings in `.env`:
 
 ```env
 DEBUG_DIR=debug
-MODEL_INPUT_PRICE_PER_1M_TOKENS=
-MODEL_OUTPUT_PRICE_PER_1M_TOKENS=
+```
+
+- Store non-secret model pricing metadata in `model-pricing-per-1m-tokens.json`:
+
+```json
+{
+  "openai:gpt-5.4": {
+    "input": null,
+    "output": null
+  }
+}
 ```
 
 - If prices are unset, record token counts and set estimated cost to `null`.
 - If prices are set, calculate estimated cost from input/output token totals.
-- These prices apply to the currently configured `MODEL`; leave unset if unknown.
+- Pricing entries apply by model id. Leave prices as `null` when unknown.
 - Use `null` for unavailable token counts. Do not use `0` unless the provider explicitly reports zero.
 - Store normalized token fields plus the raw LangChain `usage_metadata` and `response_metadata` dictionaries from the final AI message.
 
