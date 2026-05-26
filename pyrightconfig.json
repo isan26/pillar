@@ -1,0 +1,14 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "include": [
+    "agent.py",
+    "conversation.py",
+    "tracer"
+  ],
+  "exclude": [
+    ".venv",
+    "debug",
+    "conversations"
+  ]
+}
