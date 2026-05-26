@@ -12,12 +12,22 @@ import {
 } from "@/lib/format";
 import type { SessionSummary } from "@/types";
 
-type SortKey = "started_at" | "model" | "turn_count" | "total_tokens" | "estimated_cost_usd";
+type SortKey =
+    | "started_at"
+    | "model"
+    | "agent"
+    | "turn_count"
+    | "total_tokens"
+    | "estimated_cost_usd";
 type SortDir = "asc" | "desc";
+
+const DEFAULT_AGENT_VALUE = "__default__";
+const DEFAULT_AGENT_LABEL = "(default agent.md)";
 
 export function SessionsListView() {
     const { data: sessions, isLoading, error } = useSessions();
     const [modelFilter, setModelFilter] = useState<string>("all");
+    const [agentFilter, setAgentFilter] = useState<string>("all");
     const [sortKey, setSortKey] = useState<SortKey>("started_at");
     const [sortDir, setSortDir] = useState<SortDir>("desc");
 
@@ -26,14 +36,34 @@ export function SessionsListView() {
         return Array.from(new Set(sessions.map((session) => session.model))).sort();
     }, [sessions]);
 
+    const agents = useMemo(() => {
+        if (!sessions) return [];
+        const unique = new Set<string>();
+        let hasDefault = false;
+        for (const session of sessions) {
+            if (session.agent == null) hasDefault = true;
+            else unique.add(session.agent);
+        }
+        const sorted = Array.from(unique).sort();
+        return hasDefault ? [DEFAULT_AGENT_VALUE, ...sorted] : sorted;
+    }, [sessions]);
+
     const visible = useMemo(() => {
         if (!sessions) return [];
-        const filtered =
+        const byModel =
             modelFilter === "all"
                 ? sessions
                 : sessions.filter((session) => session.model === modelFilter);
-        return [...filtered].sort(compareSessions(sortKey, sortDir));
-    }, [sessions, modelFilter, sortKey, sortDir]);
+        const byAgent =
+            agentFilter === "all"
+                ? byModel
+                : byModel.filter((session) =>
+                      agentFilter === DEFAULT_AGENT_VALUE
+                          ? session.agent == null
+                          : session.agent === agentFilter,
+                  );
+        return [...byAgent].sort(compareSessions(sortKey, sortDir));
+    }, [sessions, modelFilter, agentFilter, sortKey, sortDir]);
 
     function toggleSort(key: SortKey): void {
         if (sortKey === key) {
@@ -61,21 +91,38 @@ export function SessionsListView() {
                         {visible.length} of {sessions.length}
                     </p>
                 </div>
-                <label className="flex items-center gap-2 text-sm">
-                    <span className="text-[color:var(--color-text-dim)]">Model</span>
-                    <select
-                        value={modelFilter}
-                        onChange={(event) => setModelFilter(event.target.value)}
-                        className="rounded border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] px-2 py-1 text-[color:var(--color-text)]"
-                    >
-                        <option value="all">all</option>
-                        {models.map((model) => (
-                            <option key={model} value={model}>
-                                {model}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                <div className="flex items-center gap-4 text-sm">
+                    <label className="flex items-center gap-2">
+                        <span className="text-[color:var(--color-text-dim)]">Agent</span>
+                        <select
+                            value={agentFilter}
+                            onChange={(event) => setAgentFilter(event.target.value)}
+                            className="rounded border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] px-2 py-1 text-[color:var(--color-text)]"
+                        >
+                            <option value="all">all</option>
+                            {agents.map((agent) => (
+                                <option key={agent} value={agent}>
+                                    {agent === DEFAULT_AGENT_VALUE ? DEFAULT_AGENT_LABEL : agent}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="flex items-center gap-2">
+                        <span className="text-[color:var(--color-text-dim)]">Model</span>
+                        <select
+                            value={modelFilter}
+                            onChange={(event) => setModelFilter(event.target.value)}
+                            className="rounded border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] px-2 py-1 text-[color:var(--color-text)]"
+                        >
+                            <option value="all">all</option>
+                            {models.map((model) => (
+                                <option key={model} value={model}>
+                                    {model}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
             </div>
 
             <div className="overflow-x-auto rounded border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)]">
@@ -88,6 +135,13 @@ export function SessionsListView() {
                                 dir={sortDir}
                                 onClick={() => toggleSort("started_at")}
                             />
+                            <th className="px-3 py-2">Prompt</th>
+                            <ThSort
+                                label="Agent"
+                                active={sortKey === "agent"}
+                                dir={sortDir}
+                                onClick={() => toggleSort("agent")}
+                            />
                             <ThSort
                                 label="Model"
                                 active={sortKey === "model"}
@@ -95,7 +149,6 @@ export function SessionsListView() {
                                 onClick={() => toggleSort("model")}
                             />
                             <th className="px-3 py-2">Status</th>
-                            <th className="px-3 py-2">Duration</th>
                             <ThSort
                                 label="Turns"
                                 active={sortKey === "turn_count"}
@@ -166,7 +219,7 @@ type SessionRowProps = {
 function SessionRow({ session }: SessionRowProps) {
     return (
         <tr className="border-b border-[color:var(--color-border)] last:border-0 hover:bg-[color:var(--color-bg-elev-2)]">
-            <td className="px-3 py-2">
+            <td className="px-3 py-2 whitespace-nowrap">
                 <Link
                     to={`/sessions/${session.session_id}`}
                     className="text-[color:var(--color-accent)] no-underline hover:underline"
@@ -175,12 +228,26 @@ function SessionRow({ session }: SessionRowProps) {
                     {formatRelative(session.started_at)}
                 </Link>
             </td>
-            <td className="px-3 py-2 font-mono text-xs">{shortenModel(session.model)}</td>
             <td className="px-3 py-2">
-                <StatusBadge label={session.status} tone={statusTone(session.status)} />
+                {session.first_user_message ? (
+                    <div
+                        className="max-w-[420px] truncate text-[color:var(--color-text)]"
+                        title={session.first_user_message}
+                    >
+                        {session.first_user_message}
+                    </div>
+                ) : (
+                    <span className="text-[color:var(--color-text-dim)]">—</span>
+                )}
             </td>
-            <td className="px-3 py-2 text-[color:var(--color-text-dim)]">
-                {formatDuration(session.started_at, session.completed_at)}
+            <td className="px-3 py-2 font-mono text-xs">
+                {session.agent ?? (
+                    <span className="text-[color:var(--color-text-dim)]">{DEFAULT_AGENT_LABEL}</span>
+                )}
+            </td>
+            <td className="px-3 py-2 font-mono text-xs">{shortenModel(session.model)}</td>
+            <td className="px-3 py-2 whitespace-nowrap">
+                <StatusDurationCell session={session} />
             </td>
             <td className="px-3 py-2 text-right">{session.turn_count}</td>
             <td className="px-3 py-2 text-right">{formatTokens(session.total_tokens)}</td>
@@ -193,6 +260,21 @@ function SessionRow({ session }: SessionRowProps) {
                 )}
             </td>
         </tr>
+    );
+}
+
+function StatusDurationCell({ session }: { session: SessionSummary }) {
+    if (session.status === "running") {
+        return <StatusBadge label="running" tone={statusTone(session.status)} />;
+    }
+    const duration = formatDuration(session.started_at, session.completed_at);
+    return (
+        <div className="flex items-center gap-2">
+            <StatusBadge label={session.status} tone={statusTone(session.status)} />
+            <span className="font-mono text-xs text-[color:var(--color-text-dim)]">
+                {duration}
+            </span>
+        </div>
     );
 }
 

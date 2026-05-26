@@ -90,8 +90,14 @@ function PaneHeader({ detail, canClose, onClose }: PaneHeaderProps) {
                         </span>
                         <StatusBadge label={session.status} tone={statusTone(session.status)} />
                     </div>
-                    <div className="mt-1 text-xs text-[color:var(--color-text-dim)]">
-                        {shortenModel(session.model)} · {formatTimestamp(session.started_at)}
+                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[color:var(--color-text-dim)]">
+                        <span className="font-mono text-[color:var(--color-text)]">
+                            {session.agent ?? "(default agent.md)"}
+                        </span>
+                        <span>·</span>
+                        <span>{shortenModel(session.model)}</span>
+                        <span>·</span>
+                        <span>{formatTimestamp(session.started_at)}</span>
                     </div>
                 </div>
                 {canClose && (

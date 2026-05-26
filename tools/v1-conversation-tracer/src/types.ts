@@ -6,6 +6,7 @@ export type Role = "system" | "user" | "assistant";
 export type Session = {
     session_id: string;
     model: string;
+    agent: string | null;
     debug_path: string;
     started_at: string;
     completed_at: string | null;
@@ -77,6 +78,7 @@ export type SessionSummary = Session & {
     run_count: number;
     message_count: number;
     error_count: number;
+    first_user_message: string | null;
 };
 
 export type SessionDetail = {

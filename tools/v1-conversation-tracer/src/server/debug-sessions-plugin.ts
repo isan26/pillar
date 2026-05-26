@@ -25,6 +25,23 @@ async function readJson<T>(path: string, fallback: T): Promise<T> {
     }
 }
 
+function normaliseSession(session: Session): Session {
+    return { ...session, agent: session.agent ?? null };
+}
+
+const FIRST_MESSAGE_MAX_CHARS = 200;
+
+function extractFirstUserMessage(messages: Message[]): string | null {
+    for (const message of messages) {
+        if (message.role !== "user") continue;
+        const collapsed = message.content.replace(/\s+/g, " ").trim();
+        if (collapsed.length === 0) continue;
+        if (collapsed.length <= FIRST_MESSAGE_MAX_CHARS) return collapsed;
+        return `${collapsed.slice(0, FIRST_MESSAGE_MAX_CHARS)}…`;
+    }
+    return null;
+}
+
 async function readJsonl<T>(path: string): Promise<T[]> {
     try {
         const raw = await readFile(path, "utf-8");
@@ -58,8 +75,9 @@ async function listSessionFolders(): Promise<string[]> {
 
 async function loadSummary(folder: string): Promise<SessionSummary | null> {
     const folderPath = join(CONVERSATIONS_DIR, folder);
-    const session = await readJson<Session | null>(join(folderPath, "session.json"), null);
-    if (!session) return null;
+    const raw = await readJson<Session | null>(join(folderPath, "session.json"), null);
+    if (!raw) return null;
+    const session = normaliseSession(raw);
 
     const [turns, runs, messages] = await Promise.all([
         readJson<Turn[]>(join(folderPath, "turns.json"), []),
@@ -78,6 +96,7 @@ async function loadSummary(folder: string): Promise<SessionSummary | null> {
         run_count: runs.length,
         message_count: messages.length,
         error_count: errorCount,
+        first_user_message: extractFirstUserMessage(messages),
     };
 }
 
@@ -99,8 +118,9 @@ async function loadDetail(sessionId: string): Promise<SessionDetail | null> {
     if (!folder) return null;
 
     const folderPath = join(CONVERSATIONS_DIR, folder);
-    const session = await readJson<Session | null>(join(folderPath, "session.json"), null);
-    if (!session) return null;
+    const raw = await readJson<Session | null>(join(folderPath, "session.json"), null);
+    if (!raw) return null;
+    const session = normaliseSession(raw);
 
     const [messages, turns, runs, events] = await Promise.all([
         readJson<Message[]>(join(folderPath, "messages.json"), []),

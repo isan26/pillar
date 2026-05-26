@@ -49,12 +49,13 @@ class FileConversationTracer:
         self._pricing = load_model_pricing()
 
     @classmethod
-    def start(cls, model: str) -> "FileConversationTracer":
+    def start(cls, model: str, agent: str | None = None) -> "FileConversationTracer":
         session_id = uuid.uuid4().hex[:8]
         folder, _timestamp = ensure_session_folder(session_id)
         session: Session = {
             "session_id": session_id,
             "model": model,
+            "agent": agent,
             "debug_path": str(folder),
             "started_at": utc_now(),
             "completed_at": None,
