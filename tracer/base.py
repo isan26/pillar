@@ -18,6 +18,7 @@ RunStatus = Literal["running", "success", "error"]
 class Session(TypedDict):
     session_id: str
     model: str
+    agent: str | None
     debug_path: str
     started_at: str
     completed_at: str | None

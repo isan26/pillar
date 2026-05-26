@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useSessions } from "@/hooks/use-sessions";
+import { shortenModel } from "@/lib/format";
 import { SessionPane } from "@/views/session-pane";
 
 export function SessionDetailView() {
@@ -59,19 +60,23 @@ export function SessionDetailView() {
                         + Add comparison
                     </button>
                     {isPickerOpen && (
-                        <div className="absolute right-0 top-full z-10 mt-1 w-72 max-h-80 overflow-auto rounded border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] shadow-lg">
+                        <div className="absolute right-0 top-full z-10 mt-1 max-h-96 w-96 overflow-auto rounded border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] shadow-lg">
                             {availableForCompare.map((session) => (
                                 <button
                                     key={session.session_id}
                                     type="button"
                                     onClick={() => addCompare(session.session_id)}
-                                    className="block w-full px-3 py-2 text-left text-xs hover:bg-[color:var(--color-bg-elev-2)]"
+                                    className="block w-full border-b border-[color:var(--color-border)] px-3 py-2 text-left text-xs last:border-0 hover:bg-[color:var(--color-bg-elev-2)]"
                                 >
-                                    <div className="text-[color:var(--color-text-strong)]">
-                                        {session.session_id}
+                                    <div
+                                        className="line-clamp-2 text-[color:var(--color-text-strong)]"
+                                        title={session.first_user_message ?? undefined}
+                                    >
+                                        {session.first_user_message ?? "(no messages)"}
                                     </div>
-                                    <div className="text-[color:var(--color-text-dim)]">
-                                        {session.model} · {session.turn_count} turns
+                                    <div className="mt-1 font-mono text-[10px] text-[color:var(--color-text-dim)]">
+                                        {session.agent ?? "(default)"} · {shortenModel(session.model)} ·{" "}
+                                        {session.turn_count} turns
                                     </div>
                                 </button>
                             ))}

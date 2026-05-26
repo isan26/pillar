@@ -1,3 +1,5 @@
+from argparse import ArgumentParser
+from pathlib import Path
 from typing import Any, cast
 import os
 
@@ -11,12 +13,38 @@ load_dotenv()
 
 TEXT_ENCODING = "utf-8"
 DEFAULT_MODEL = "openai:gpt-5.4"
-MODEL = os.getenv("MODEL", DEFAULT_MODEL)
+DEFAULT_AGENT_FILE = Path("agent.md")
+AGENTS_DIR = Path("agents")
 
 
-def load_agent_prompt() -> str:
-    with open("agent.md", "r", encoding=TEXT_ENCODING) as file:
-        return file.read()
+def parse_cli() -> tuple[str | None, str | None]:
+    parser = ArgumentParser(description="Run the conversational agent.")
+    parser.add_argument("--agent", default=None, help="Agent name (e.g. agent-optimist-v1)")
+    parser.add_argument("--model", default=None, help="Model id (e.g. openai:gpt-5-mini)")
+    args = parser.parse_args()
+    return args.agent, args.model
+
+
+def resolve_agent_prompt(name: str | None) -> tuple[str, str]:
+    """Return (prompt_body, source_path) for the named agent.
+
+    Lookup order when name is given: agents/<name>/prompt.md, then
+    agents/test/<name>/prompt.md. Raises FileNotFoundError if neither exists.
+    When name is None, returns the root agent.md.
+    """
+    if name is None:
+        return DEFAULT_AGENT_FILE.read_text(encoding=TEXT_ENCODING), str(DEFAULT_AGENT_FILE)
+
+    candidates = [
+        AGENTS_DIR / name / "prompt.md",
+        AGENTS_DIR / "test" / name / "prompt.md",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate.read_text(encoding=TEXT_ENCODING), str(candidate)
+
+    tried = ", ".join(str(candidate) for candidate in candidates)
+    raise FileNotFoundError(f"agent '{name}' not found; tried: {tried}")
 
 
 def pick_response(result: Any) -> tuple[str, object]:
@@ -38,6 +66,7 @@ def pick_response(result: Any) -> tuple[str, object]:
 def ask(
     agent: Any,
     tracer: ConversationTracer,
+    model: str,
     message: str,
     role: Role = "user",
     purpose: str = "chat_response",
@@ -58,7 +87,7 @@ def ask(
     except Exception as error:
         tracer.fail_run(run, error)
         fallback = (
-            f"Sorry, the configured model failed: {MODEL}. "
+            f"Sorry, the configured model failed: {model}. "
             f"Check the debug logs for details."
         )
         assistant_message = tracer.add_message(
@@ -69,8 +98,15 @@ def ask(
 
 
 def main() -> None:
-    tracer = FileConversationTracer.start(model=MODEL)
-    print(f"Model: {MODEL}")
+    cli_agent, cli_model = parse_cli()
+    agent_name = cli_agent or os.getenv("AGENT")
+    model = cli_model or os.getenv("MODEL", DEFAULT_MODEL)
+
+    prompt, prompt_source = resolve_agent_prompt(agent_name)
+
+    tracer = FileConversationTracer.start(model=model, agent=agent_name)
+    print(f"Model: {model}")
+    print(f"Agent: {agent_name or '(default agent.md)'}  ({prompt_source})")
     print(f"Debug folder: {tracer.session_path}")
 
     conversation_done = {"value": False}
@@ -80,14 +116,15 @@ def main() -> None:
         conversation_done["value"] = True
 
     agent = create_agent(
-        model=MODEL,
-        system_prompt=load_agent_prompt(),
+        model=model,
+        system_prompt=prompt,
         tools=[terminate_conversation_tool],
     )
 
     hello_message = ask(
         agent,
         tracer,
+        model,
         "Say hello and introduce yourself, expect interaction from the user.",
         "system",
         "greeting",
@@ -96,7 +133,7 @@ def main() -> None:
 
     while not conversation_done["value"]:
         user_message = input("Ask: ")
-        response = ask(agent, tracer, user_message)
+        response = ask(agent, tracer, model, user_message)
         print(response)
 
     tracer.close()
