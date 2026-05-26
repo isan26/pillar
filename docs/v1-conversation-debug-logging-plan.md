@@ -80,12 +80,13 @@ ai_message.response_metadata
 
 ```env
 DEBUG_DIR=debug
-LLM_INPUT_PRICE_PER_1M_TOKENS=
-LLM_OUTPUT_PRICE_PER_1M_TOKENS=
+MODEL_INPUT_PRICE_PER_1M_TOKENS=
+MODEL_OUTPUT_PRICE_PER_1M_TOKENS=
 ```
 
 - If prices are unset, record token counts and set estimated cost to `null`.
 - If prices are set, calculate estimated cost from input/output token totals.
+- These prices apply to the currently configured `MODEL`; leave unset if unknown.
 - Use `null` for unavailable token counts. Do not use `0` unless the provider explicitly reports zero.
 - Store normalized token fields plus the raw LangChain `usage_metadata` and `response_metadata` dictionaries from the final AI message.
 
@@ -112,7 +113,7 @@ sanitize_for_logging(...)
 - Use `pathlib.Path` for cross-platform paths.
 - Include `session_id` in every saved message, turn, run, and event record, even though files live inside a session folder.
 - Include `started_at`, `completed_at`, and `latency_ms` for turns and runs.
-- Apply recursive log sanitization before writing metadata or errors. Match sensitive keys case-insensitively by substring, including `api_key`, `apikey`, `authorization`, `bearer`, `cookie`, `password`, `secret`, `token`, `access_token`, `refresh_token`, and `client_secret`.
+- Apply recursive log sanitization before writing metadata or errors. Redact secret-like keys such as `api_key`, `apikey`, `authorization`, `bearer`, `cookie`, `password`, `secret`, `access_token`, `refresh_token`, `client_secret`, and keys named `token` or ending in `_token`/`-token`, without redacting token-count fields like `input_tokens`.
 - Do not introduce a `ConversationStore` class yet; that abstraction becomes useful once the project has multiple files or a second storage backend.
 
 ## Test Plan
