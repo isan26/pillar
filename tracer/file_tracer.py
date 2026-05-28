@@ -85,6 +85,10 @@ class FileConversationTracer:
     def model(self) -> str:
         return self._session["model"]
 
+    @property
+    def last_run(self) -> Run | None:
+        return self._runs[-1] if self._runs else None
+
     # ------------------------------------------------------------------ #
     # Turns                                                               #
     # ------------------------------------------------------------------ #
