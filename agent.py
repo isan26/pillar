@@ -1,7 +1,9 @@
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import Any, cast
+import io
 import os
+import sys
 
 from dotenv import load_dotenv
 from langchain.agents import create_agent
@@ -15,6 +17,15 @@ TEXT_ENCODING = "utf-8"
 DEFAULT_MODEL = "openai:gpt-5.4"
 DEFAULT_AGENT_FILE = Path("agent.md")
 AGENTS_DIR = Path("agents")
+
+
+def enable_utf8_stdout() -> None:
+    """Force stdout/stderr to UTF-8 so model output containing non-cp1252
+    characters (e.g. the non-breaking hyphen U+2011) doesn't crash print() on a
+    Windows console, which defaults to the legacy cp1252 codec."""
+    for stream in (sys.stdout, sys.stderr):
+        if isinstance(stream, io.TextIOWrapper):
+            stream.reconfigure(encoding="utf-8", errors="replace")
 
 
 def parse_cli() -> tuple[str | None, str | None]:
@@ -98,6 +109,7 @@ def ask(
 
 
 def main() -> None:
+    enable_utf8_stdout()
     cli_agent, cli_model = parse_cli()
     agent_name = cli_agent or os.getenv("AGENT")
     model = cli_model or os.getenv("MODEL", DEFAULT_MODEL)
