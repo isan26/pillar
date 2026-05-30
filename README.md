@@ -33,3 +33,28 @@ Final idea, build a configurable chat bot with RAG.
 - Re using what was built:
 - Different agents (with different configs)could be created.
 
+# Local Postgres with pgvector
+
+Run a local Postgres instance with pgvector enabled:
+
+```bash
+docker compose up --build -d
+```
+
+Defaults:
+
+- Host: `localhost`
+- Port: `5434`
+- Database: `pillar`
+- User: `pillar`
+- Password: `pillar`
+
+I'm using 5434 as the postgres port to avoid collitions with running instances ( I'm running one on local already)
+You can override them with environment variables before starting the container:
+
+```bash
+POSTGRES_DB=pillar POSTGRES_USER=pillar POSTGRES_PASSWORD=secret POSTGRES_PORT=5435 docker compose up --build -d
+```
+
+The `vector` extension is created automatically during database initialization.
+

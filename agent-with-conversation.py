@@ -11,7 +11,7 @@ MODEL = os.getenv("MODEL", DEFAULT_MODEL)
 
 conversation_done = False
 
-conversation_file = FileConversation('./conversations/my-conversation.json')
+conversation_file = FileConversation('./conversations/my-conversation.jsonl')
 
 
 def load_agent() -> str:

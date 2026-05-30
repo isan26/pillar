@@ -1,0 +1,26 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    container_name: pillar-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pillar}
+      POSTGRES_USER: ${POSTGRES_USER:-pillar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pillar}
+    ports:
+      - "${POSTGRES_PORT:-5434}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_data:
+
+
+# docker compose up --build -d
