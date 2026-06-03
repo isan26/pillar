@@ -21,3 +21,11 @@ coverage/
 
 # debug tracer output
 /debug
+
+# personal specialists: prompts stay local; example.md ships as the reference
+/personal/*
+!/personal/calls
+/personal/calls/*
+!/personal/calls/ask-specialist
+/personal/calls/ask-specialist/*
+!/personal/calls/ask-specialist/example.md
