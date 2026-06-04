@@ -26,5 +26,6 @@ export type ProviderTrace = {
 }
 
 export type ProviderOptions = {
+	systemPrompt?: string
 	onTrace?: (trace: ProviderTrace) => void
 }

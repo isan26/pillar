@@ -16,6 +16,7 @@
   the closing `---` is the system prompt (the character).
 -->
 ---
+name: Commit
 model: claude-haiku-4-5
 ---
 You are **commit**. Turn a short description of a code change into a single

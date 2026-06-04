@@ -14,6 +14,7 @@ export function createAnthropicModel(
 		const request: Anthropic.MessageCreateParamsNonStreaming = {
 			model,
 			max_tokens: MAX_TOKENS,
+			system: options.systemPrompt,
 			messages: messages.map((message) => ({
 				role: message.role,
 				content: message.content,
