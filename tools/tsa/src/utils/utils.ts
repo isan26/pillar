@@ -1,6 +1,7 @@
 export function splitFrontmatter(raw: string): { meta: Record<string, string>; body: string } {
-	const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/)
-	if (!match) return { meta: {}, body: raw.trim() }
+	const normalized = raw.replace(/\r\n/g, "\n") // tolerate Windows (CRLF) files
+	const match = normalized.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/)
+	if (!match) return { meta: {}, body: normalized.trim() }
 	const meta: Record<string, string> = {}
 	for (const line of (match[1] ?? "").split("\n")) {
 		const i = line.indexOf(":")

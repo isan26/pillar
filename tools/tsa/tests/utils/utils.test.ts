@@ -29,4 +29,10 @@ describe("splitFrontmatter", () => {
 		const { meta } = splitFrontmatter("---\nmodel: x\ngarbage line\n---\nbody")
 		expect(meta).toEqual({ model: "x" })
 	})
+
+	it("tolerates CRLF line endings (Windows files)", () => {
+		const { meta, body } = splitFrontmatter("---\r\nmodel: claude-opus-4-8\r\n---\r\nbody")
+		expect(meta.model).toBe("claude-opus-4-8")
+		expect(body).toBe("body")
+	})
 })
