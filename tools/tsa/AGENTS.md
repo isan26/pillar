@@ -53,6 +53,9 @@ truth for conventions and is kept in sync with `CLAUDE.md`.
 - Run: `npm run dev` (tsx). Typecheck: `npm run typecheck` (`tsc --noEmit`).
   Test: `npm test` (vitest).
 
+## Git
+- Commit messages are concise **one-liners** — no body, and **no `Co-Authored-By` / sign-off trailer**.
+
 ## Required Verification
 Before handing back changes:
 - `npm run typecheck` passes — no type errors.
