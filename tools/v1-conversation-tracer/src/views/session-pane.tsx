@@ -92,7 +92,7 @@ function PaneHeader({ detail, canClose, onClose }: PaneHeaderProps) {
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[color:var(--color-text-dim)]">
                         <span className="font-mono text-[color:var(--color-text)]">
-                            {session.agent ?? "(default agent.md)"}
+                            {session.agent ?? "(no agent)"}
                         </span>
                         <span>·</span>
                         <span>{shortenModel(session.model)}</span>

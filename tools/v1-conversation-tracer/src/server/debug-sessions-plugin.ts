@@ -14,7 +14,11 @@ import type {
 } from "../types";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const CONVERSATIONS_DIR = resolve(HERE, "../../../../debug/conversations");
+// Defaults to tsa's debug folder. Set TRACER_CONVERSATIONS_DIR to override
+// (e.g. point at the legacy repo-root debug/ the Python app writes to).
+const CONVERSATIONS_DIR = process.env.TRACER_CONVERSATIONS_DIR
+    ? resolve(process.env.TRACER_CONVERSATIONS_DIR)
+    : resolve(HERE, "../../../tsa/debug/conversations");
 
 async function readJson<T>(path: string, fallback: T): Promise<T> {
     try {

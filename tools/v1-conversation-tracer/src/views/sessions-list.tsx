@@ -22,7 +22,7 @@ type SortKey =
 type SortDir = "asc" | "desc";
 
 const DEFAULT_AGENT_VALUE = "__default__";
-const DEFAULT_AGENT_LABEL = "(default agent.md)";
+const DEFAULT_AGENT_LABEL = "(no agent)";
 
 export function SessionsListView() {
     const { data: sessions, isLoading, error } = useSessions();
