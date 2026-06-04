@@ -16,6 +16,7 @@ import type { Tracer } from "@/tracer/tracer"
 import type {
 	EventRecord,
 	MessageRecord,
+	MessageSource,
 	RunRecord,
 	SessionRecord,
 	SessionStatus,
@@ -186,7 +187,7 @@ export function createFileTracer(options: FileTracerOptions): Tracer {
 		currentTurnId = null
 	}
 
-	function addMessage(role: TracerRole, content: string, source: string): string {
+	function addMessage(role: TracerRole, content: string, source: MessageSource): string {
 		const messageId = `msg_${String(messages.length + 1).padStart(3, "0")}`
 		messages.push({
 			session_id: sessionId,

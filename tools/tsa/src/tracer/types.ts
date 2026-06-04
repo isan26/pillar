@@ -9,6 +9,7 @@ export type SessionStatus = "running" | "completed" | "failed"
 export type TurnStatus = "running" | "completed" | "failed"
 export type RunStatus = "running" | "success" | "error"
 export type TracerRole = "system" | "user" | "assistant"
+export type MessageSource = "console" | "model"
 
 export type SessionRecord = {
 	session_id: string
