@@ -3,6 +3,7 @@ from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy import String, DateTime
 from datetime import datetime, UTC
 from librarian.db.session import get_db
+from .job import Job
 
 
 class File(Base):
@@ -19,5 +20,10 @@ def create_file(filename: str, path: str) -> File:
     db = next(get_db())
     db.add(file)
     db.commit()
+    db.refresh(file)
+    job = Job(file_id=file.id, status="pending", meta={"filename": filename})
+    db.add(job)
+    db.commit()
+    
     db.refresh(file)
     return file

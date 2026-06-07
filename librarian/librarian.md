@@ -17,3 +17,10 @@ Build the integration using Python Protocols so we can implement other versions 
 check on the repo:
 https://github.com/ed-donner/agents/tree/main/2_openai
 https://www.gradio.app/
+
+
+created basic Crud schema, 
+Files, Books, Tags and Jobs.
+Next step is to execute jobs and vectorize the whole thing.
+From a vector data the user should be able to select pages so the LLM can suggest tags
+Then a book will have content and tags associated
