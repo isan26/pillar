@@ -1,8 +1,8 @@
-"""add file and book relationship
+"""tags for books
 
-Revision ID: 2e479694a2dd
+Revision ID: 7eb1b6b25863
 Revises: df185b25ee76
-Create Date: 2026-06-06 22:19:43.367590
+Create Date: 2026-06-06 23:19:22.601893
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '2e479694a2dd'
+revision: str = '7eb1b6b25863'
 down_revision: Union[str, Sequence[str], None] = 'df185b25ee76'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -29,6 +29,21 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     schema='librarian'
     )
+    op.create_table('tags',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=255), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    schema='librarian'
+    )
+    op.create_table('book_tags',
+    sa.Column('book_id', sa.Integer(), nullable=False),
+    sa.Column('tag_id', sa.Integer(), nullable=False),
+    sa.Column('confidence', sa.Float(), nullable=False),
+    sa.ForeignKeyConstraint(['book_id'], ['librarian.books.id'], ),
+    sa.ForeignKeyConstraint(['tag_id'], ['librarian.tags.id'], ),
+    sa.PrimaryKeyConstraint('book_id', 'tag_id'),
+    schema='librarian'
+    )
     op.add_column('books', sa.Column('file_id', sa.Integer(), nullable=False), schema='librarian')
     op.create_foreign_key(None, 'books', 'files', ['file_id'], ['id'], source_schema='librarian', referent_schema='librarian', ondelete='RESTRICT')
     op.drop_column('books', 'file_path', schema='librarian')
@@ -41,5 +56,7 @@ def downgrade() -> None:
     op.add_column('books', sa.Column('file_path', sa.VARCHAR(), autoincrement=False, nullable=False), schema='librarian')
     op.drop_constraint(None, 'books', schema='librarian', type_='foreignkey')
     op.drop_column('books', 'file_id', schema='librarian')
+    op.drop_table('book_tags', schema='librarian')
+    op.drop_table('tags', schema='librarian')
     op.drop_table('files', schema='librarian')
     # ### end Alembic commands ###
