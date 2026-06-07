@@ -1,4 +1,4 @@
-import { createAnthropicModel } from "@/providers/anthropic.provider";
+import { createChat } from "@/providers/providers";
 import { createFileTracer } from "@/tracer/file-tracer";
 import type { Message } from '@/types';
 
@@ -11,7 +11,7 @@ export type AgentRunTurnOptions = {
 
 export async function runTurn(options: AgentRunTurnOptions): Promise<void> {
     const tracer = createFileTracer({ model: options.model, agent: options.agentName ?? null })
-    const chat = createAnthropicModel(options.model, {
+    const chat = createChat(options.model, {
         systemPrompt: options.systemPrompt,
         onTrace: trace => tracer.recordRun(trace)
     })

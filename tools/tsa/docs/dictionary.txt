@@ -1,0 +1,11 @@
+- system prompt: persona/instructions, sent to llm on every request
+- agent (named and reusable)
+  + model
+  + system prompt
+  + tools
+  + loop
+- run: one model API call (request -> response)
+- turn: one user input + the assistant's complete response to it. made out of one or more runs
+  + one: a call (ask / ask-specialist)
+  + many: agent loop
+- session: one bounded interaction, start to end: contain turns

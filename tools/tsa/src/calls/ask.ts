@@ -1,6 +1,6 @@
 import { runTurn } from "@/agent/run-turn";
 import { runCli } from "@/cli/run-cli";
-import { DEFAULT_MODEL } from "@/constants/model"
+import { DEFAULT_MODEL } from "@/constants/defaults"
 
 /*
 |--------------------------------------------------------------------------

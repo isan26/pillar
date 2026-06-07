@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk"
-import { DEFAULT_MODEL, MAX_TOKENS } from "@/constants/model"
-import { PROVIDER } from "@/providers/providers.constants"
-import type { ChatModel, ChatResponse, ProviderOptions } from "@/providers/providers.types"
+import { DEFAULT_MODEL, MAX_TOKENS } from "@/constants/defaults"
+import { PROVIDER } from "@/providers/constants.providers"
+import type { ChatModel, ChatResponse, ProviderOptions } from "@/providers/types.providers"
 import type { Message } from "@/types"
 
 export function createAnthropicModel(
@@ -27,8 +27,6 @@ export function createAnthropicModel(
 			const response = await sdk.messages.create(request)
 			const requestId = response._request_id ?? null
 
-			// Full raw wire (request + response) goes out the side-channel; the
-			// return value stays the clean ChatResponse the app depends on.
 			options.onTrace?.({
 				provider: PROVIDER.ANTHROPIC,
 				request,

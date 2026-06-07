@@ -3,8 +3,7 @@
 // the folder of JSON/JSONL files that tools/v1-conversation-tracer consumes.
 
 import { randomUUID } from "node:crypto"
-import { estimateCostUsd } from "@/constants/pricing"
-import type { ProviderTrace } from "@/providers/providers.types"
+import type { ProviderTrace } from "@/providers/types.providers"
 import {
 	appendJsonl,
 	ensureSessionFolder,
@@ -24,6 +23,7 @@ import type {
 	TurnRecord,
 	TurnStatus,
 } from "@/tracer/types"
+import { estimateModelCostUsd } from "@/providers/utils.providers";
 
 type FileTracerOptions = {
 	model: string
@@ -230,7 +230,7 @@ export function createFileTracer(options: FileTracerOptions): Tracer {
 			output_tokens: usage.outputTokens,
 			total_tokens: usage.totalTokens,
 			latency_ms: trace.latencyMs,
-			estimated_cost_usd: estimateCostUsd(session.model, usage.inputTokens, usage.outputTokens),
+			estimated_cost_usd: estimateModelCostUsd(session.model, usage.inputTokens, usage.outputTokens),
 			raw_usage_metadata: usage.raw,
 			raw_response_metadata: toRecord(trace.response),
 			error_type: trace.error?.type ?? null,

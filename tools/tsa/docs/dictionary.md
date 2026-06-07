@@ -1,4 +1,0 @@
-- run: one model API call
-- system prompt: persona/instructions
-- agent: model + system prompt + tools + loop: named and reusable
-- turn: ~>

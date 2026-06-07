@@ -1,7 +1,7 @@
 import { resolve } from "node:path"
 import { readFileSync } from "node:fs"
 import { splitFrontmatter } from "@/utils/utils"
-import { DEFAULT_MODEL } from "@/constants/model"
+import { DEFAULT_MODEL } from "@/constants/defaults"
 
 const SPECIALIST_DIR = "personal/calls/ask-specialist"
 
