@@ -4,7 +4,8 @@
   "include": [
     "agent.py",
     "conversation.py",
-    "tracer"
+    "tracer",
+    "librarian",
   ],
   "exclude": [
     ".venv",

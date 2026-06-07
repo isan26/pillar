@@ -1,4 +1,0 @@
-To generate new migrations:
-- Update the models
-- run `alembic revision --autogenerate -m "description of the change"` to generate the migration
-- run `alembic upgrade head` to run the migrations
