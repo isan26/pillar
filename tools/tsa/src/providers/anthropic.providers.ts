@@ -27,7 +27,7 @@ export function createAnthropicModel(
 			const response = await sdk.messages.create(request)
 			const requestId = response._request_id ?? null
 
-			options.onTrace?.({
+			await options.onTrace?.({
 				provider: PROVIDER.ANTHROPIC,
 				request,
 				response,
@@ -50,7 +50,7 @@ export function createAnthropicModel(
 				},
 			}
 		} catch (error) {
-			options.onTrace?.({
+			await options.onTrace?.({
 				provider: PROVIDER.ANTHROPIC,
 				request,
 				response: null,

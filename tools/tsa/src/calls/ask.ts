@@ -1,18 +1,21 @@
-import { runTurn } from "@/agent/run-turn";
-import { runCli } from "@/cli/run-cli";
+import { runTurn, type AgentRunTurnResult } from "@/agent/run-turn"
 import { DEFAULT_MODEL } from "@/constants/defaults"
+import type { TraceRecorder } from "@/tracer/tracer"
+import type { MessageSource } from "@/tracer/types"
 
-/*
-|--------------------------------------------------------------------------
-| SIMPLE 1 QUESTION -> 1 RESPONSE, NO AGENT
-|--------------------------------------------------------------------------
-*/
+export type AskCallOptions = {
+	input: string
+	model?: string
+	inputSource?: MessageSource
+	traceRecorder?: TraceRecorder | null
+}
 
-runCli(async () => {
-	const question = process.argv.slice(2).join(" ").trim()
-	if (!question) {
-		console.error("Type your question after the script name, e.g. ask.ts wudup?")
-		process.exit(1)
-	}
-	await runTurn({ input: question, model: DEFAULT_MODEL, agentName: null })
-})
+export function ask(options: AskCallOptions): Promise<AgentRunTurnResult> {
+	const model = options.model ?? DEFAULT_MODEL
+	return runTurn({
+		input: options.input,
+		model,
+		inputSource: options.inputSource,
+		traceRecorder: options.traceRecorder,
+	})
+}

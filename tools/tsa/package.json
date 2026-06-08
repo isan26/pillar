@@ -6,8 +6,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "a": "tsx --env-file=.env src/calls/ask.ts",
-    "as": "tsx --env-file=.env src/calls/ask-specialist"
+    "a": "tsx --env-file=.env src/cli/commands/ask.ts",
+    "as": "tsx --env-file=.env src/cli/commands/ask-specialist"
   },
   "keywords": [],
   "author": "",

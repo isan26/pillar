@@ -9,3 +9,7 @@ export function splitFrontmatter(raw: string): { meta: Record<string, string>; b
 	}
 	return { meta, body: (match[2] ?? "").trim() }
 }
+
+export function assertNever(value: never, message: string): never {
+	throw new Error(message)
+}

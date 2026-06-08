@@ -25,7 +25,7 @@ import type {
 } from "@/tracer/types"
 import { estimateModelCostUsd } from "@/providers/utils.providers";
 
-type FileTracerOptions = {
+export type FileTracerOptions = {
 	model: string
 	agent?: string | null
 	baseDir?: string
@@ -269,6 +269,7 @@ export function createFileTracer(options: FileTracerOptions): Tracer {
 	return {
 		sessionId,
 		sessionPath: folder,
+		location: { kind: "file", path: folder },
 		startTurn,
 		completeTurn,
 		failTurn,
