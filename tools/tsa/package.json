@@ -1,9 +1,22 @@
 {
-  "name": "tsa",
+  "name": "@pillar/tsa",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json --resolve-full-paths",
+    "prepare": "npm run build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "a": "tsx --env-file=.env src/cli/commands/ask.ts",
@@ -18,6 +31,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "tsc-alias": "^1.8.17",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8"
