@@ -12,7 +12,8 @@ class FileSystemStorage(Storage):
         with open(local_path, "wb") as f:
             f.write(file)
 
-    def download(self, path: str) -> bytes:
+    def load(self, path: str) -> bytes:
+        """"Load a file into memory from the filesystem storage."""
         local_path = storage_folder / path
         with open(local_path, "rb") as f:
             return f.read()

@@ -1,3 +1,4 @@
 from sqlalchemy import create_engine
 
-engine = create_engine("postgresql+psycopg://pillar:pillar@localhost:5434/pillar")
+connection_string = "postgresql+psycopg://pillar:pillar@localhost:5434/librarian"
+engine = create_engine(connection_string)
