@@ -1,8 +1,7 @@
-from librarian.db.session import get_db
+from sqlalchemy.orm import Session
 from librarian.db.models.job import Job, StatusEnum
 
-def create_job(file_id: int, meta: dict) -> Job:
-    db = next(get_db())
+def create_job(db: Session, file_id: int, meta: dict) -> Job:
     new_job = Job(file_id=file_id, status=StatusEnum.PENDING, meta=meta)
     db.add(new_job)
     db.commit()
@@ -10,15 +9,13 @@ def create_job(file_id: int, meta: dict) -> Job:
     return new_job
 
 
-def get_job(job_id: int) -> Job:
-    db = next(get_db())
+def get_job(db: Session, job_id: int) -> Job:
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
         raise ValueError(f"Job with id {job_id} not found")
     return job
 
-def update_job_status(job_id: int, status: StatusEnum) -> Job:
-    db = next(get_db())
+def update_job_status(db: Session, job_id: int, status: StatusEnum) -> Job:
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
         raise ValueError(f"Job with id {job_id} not found")
@@ -28,8 +25,7 @@ def update_job_status(job_id: int, status: StatusEnum) -> Job:
     db.refresh(job)
     return job
 
-def execute_job(job_id: int) -> Job:
-    db = next(get_db())
+def execute_job(db: Session, job_id: int) -> Job:
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
         raise ValueError(f"Job with id {job_id} not found")

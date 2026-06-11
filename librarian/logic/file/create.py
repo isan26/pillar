@@ -1,5 +1,6 @@
 from librarian.integrations.storage import default_storage
-from librarian.db.models.file import create_file, File
+from librarian.db.models.file import File
+from librarian.db.operations.file import create_file
 
 
 def store_file(file: bytes, filename: str) -> "File":
