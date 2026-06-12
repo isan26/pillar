@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from librarian.db.operations.job import  get_job, update_job_status
 from librarian.integrations.storage import default_storage
 from librarian.integrations.document import load_documents_from_file
-from librarian.integrations.llm import vectorization
 
 
 def execute_job(db: Session, job_id: int):
@@ -19,9 +18,15 @@ def execute_job(db: Session, job_id: int):
         raise ValueError(f"Job {job_id} does not have a valid file path")
     
     try:
+        print(f"Loading document from {file_path} for job {job_id}")
         document = default_storage.load(file_path)
+        
+        print(f"Document loaded successfully for job {job_id}, now processing...")
         documents = load_documents_from_file(document, job)
-        vectorization(documents)
+
+        print(f"Document processed successfully for job {job_id}, now saving to database...")
+        db.add_all(documents)
+        db.commit()
 
         update_job_status(db, job_id, StatusEnum.COMPLETED)
         return True

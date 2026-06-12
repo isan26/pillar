@@ -1,7 +1,6 @@
 from librarian.db.models.job import Job
-from librarian.db.models.file import File
 from .pdf import pdf_bytes_to_documents
-from langchain_core.documents import Document
+from librarian.db.models.document import Document
 
 
 def load_documents_from_file(file_bytes: bytes, job: Job) -> list[Document]:

@@ -1,3 +1,3 @@
-from .pg_vector import pg_vector_store
+from .openai_vectorization import openai_vectorization
 
-vector_store = pg_vector_store
+vectorize = openai_vectorization
