@@ -1,0 +1,3 @@
+from .open_ai_tag_suggestion import open_ai_suggest_tags
+
+suggest_tags= open_ai_suggest_tags

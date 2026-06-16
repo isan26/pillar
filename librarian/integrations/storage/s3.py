@@ -17,7 +17,7 @@ class S3Storage(Storage):
         except NoCredentialsError:
             print("Credentials not available")
 
-    def download(self, path: str) -> bytes:
+    def load(self, path: str) -> bytes:
         try:
             response = self.s3_client.get_object(Bucket=self.bucket_name, Key=path)
             return response['Body'].read()

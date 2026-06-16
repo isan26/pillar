@@ -8,7 +8,7 @@ class Book(Base):
 
     id : Mapped[int] = mapped_column(primary_key=True)
     title : Mapped[str] = mapped_column(String(255))
-    isbn : Mapped[str] = mapped_column(String(20))
+    isbn : Mapped[str | None] = mapped_column(String(20), nullable=True)
     file_id: Mapped[int] = mapped_column(
         ForeignKey('files.id', ondelete='RESTRICT'),
         nullable=False
